@@ -1,40 +1,47 @@
 version: '2'
 services:
     ndb_mgmd:
-        image: mysql/mysql-cluster
+        image: mysql/mysql-cluster:${TAG}
         container_name: manager1
-        environment:
-            - MYSQL_ROOT_PASSWORD=root
+        volumes:
+            - ./conf/my.cnf:/etc/my.cnf
+            - ./conf/mysql-cluster.cnf:/etc/mysql-cluster.cnf
         command:
             - ndb_mgmd
         networks:
             cluster:
-                ipv4_address: 192.168.0.2
+                ipv4_address: 192.168.0.49
     ndbd1:
-        image: mysql/mysql-cluster
+        image: mysql/mysql-cluster:${TAG}
         container_name: ndb1
         depends_on:
             - ndb_mgmd
+        volumes:
+            - ./conf/my.cnf:/etc/my.cnf
+            - ./conf/mysql-cluster.cnf:/etc/mysql-cluster.cnf
         command:
             - ndbd
         networks:
             cluster:
                 ipv4_address: 192.168.0.3
     ndbd2:
-        image: mysql/mysql-cluster
+        image: mysql/mysql-cluster:${TAG}
         container_name: ndb2
         depends_on:
             - ndb_mgmd
+        volumes:
+            - ./conf/my.cnf:/etc/my.cnf
+            - ./conf/mysql-cluster.cnf:/etc/mysql-cluster.cnf
         command:
             - ndbd
         networks:
             cluster:
                 ipv4_address: 192.168.0.4
     mysqld:
-        image: mysql/mysql-cluster
+        image: mysql/mysql-cluster:${TAG}
         container_name: mysql1
         environment:
-            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
         command:
             - mysqld
         expose:
